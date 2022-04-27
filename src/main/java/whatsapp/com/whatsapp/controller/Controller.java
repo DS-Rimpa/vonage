@@ -19,7 +19,7 @@ public class Controller {
 
     @PostMapping(path= "/", consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
-    public List<Entity> saveUsers(@RequestBody List<Entity> users){
+    public Entity saveUsers(@RequestBody Entity users){
         return whatsappService.addUser(users);
     }
 
