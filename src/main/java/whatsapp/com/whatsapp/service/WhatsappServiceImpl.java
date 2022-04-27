@@ -31,9 +31,6 @@ public class WhatsappServiceImpl {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         logger.info("Request in string :: {}", users);
-        HttpEntity<Entity> httpEntity = new HttpEntity<Entity>(entity, httpHeaders);
-        logger.info("Request in Http Entity :: {}", httpEntity);
-        logger.info("Request in Http Entity :: {}");
 
 
 //        ResponseEntity<String> response=restTemplate.exchange(vonageUrl,HttpMethod.POST, httpEntity,String.class);
@@ -49,6 +46,10 @@ public class WhatsappServiceImpl {
                             .build())
                     .collect(Collectors.toList());
 
+
+            HttpEntity<Entity> httpEntity = new HttpEntity<Entity>(user.get(0), httpHeaders);
+            logger.info("Request in Http Entity :: {}", httpEntity);
+            logger.info("Request in Http Entity :: {}");
 
 //        ResponseEntity<Void> res = restTemplate.postForEntity(vonageUrl,user, Void.class);
 //            ResponseEntity<Entity> res = restTemplate.postForEntity(vonageUrl, user, Entity.class);
