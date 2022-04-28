@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import whatsapp.com.whatsapp.config.NexmoConfig;
 import whatsapp.com.whatsapp.entity.Entity;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -20,9 +18,12 @@ public class WhatsappServiceImpl {
     @Autowired
     private RestTemplate restTemplate;
     private final Entity entity;
+    @Autowired
+    private NexmoConfig nexmoConfig;
 
     public WhatsappServiceImpl() {
         entity = new Entity();
+        nexmoConfig = new NexmoConfig();
     }
 
 
@@ -31,11 +32,13 @@ public class WhatsappServiceImpl {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         logger.info("Request in string :: {}", user);
-        String apiKey = "6eba22d5"+":"+"QmXBt61Pq3klggFI";
+//        String apiKey = "6eba22d5"+":"+"QmXBt61Pq3klggFI";
+        String auth = nexmoConfig.getApiKey()+":"+nexmoConfig.getApiSecret();
         HttpEntity<Entity> httpEntity = new HttpEntity<Entity>(user, httpHeaders);
         logger.info("Request in Http Entity :: {}", httpEntity);
         logger.info("Request in Http Entity :: {}");
-        httpHeaders.setBasicAuth("6eba22d5","QmXBt61Pq3klggFI");
+//        httpHeaders.setBasicAuth("6eba22d5","QmXBt61Pq3klggFI");
+        httpHeaders.setBasicAuth(nexmoConfig.getApiKey(),nexmoConfig.getApiSecret());
 
 
 //        ResponseEntity<String> response=restTemplate.exchange(vonageUrl,HttpMethod.POST, httpEntity,String.class);
@@ -70,12 +73,7 @@ return null;
 
     }
 
-    public Entity getEntity(Entity entity1)
-    {
 
-         entity1.setTo(entity.getTo());
-         return entity1;
-    }
 }
 
 
