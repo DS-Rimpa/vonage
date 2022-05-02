@@ -1,13 +1,20 @@
 package whatsapp.com.whatsapp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import whatsapp.com.whatsapp.config.NexmoConfig;
 import whatsapp.com.whatsapp.entity.Entity;
+import whatsapp.com.whatsapp.entity.Response;
+
+import java.net.URI;
+import java.net.http.HttpClient;
 
 
 @Service
@@ -25,24 +32,41 @@ public class WhatsappServiceImpl {
         entity = new Entity();
         nexmoConfig = new NexmoConfig();
     }
+    Gson gson = new Gson();
+    HttpClient client= HttpClient.newHttpClient();
+//    Response response = gson.fromJson(json, Response.class);
+    Response response=new Response();
 
 
-    public Entity addUser(Entity user) {
+    public Response addUser(Entity user) {
+        try {
         String vonageUrl = "https://messages-sandbox.nexmo.com/v1/messages";
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        Response nexmoResponse=null;
         logger.info("Request in string :: {}", user);
 //        String apiKey = "6eba22d5"+":"+"QmXBt61Pq3klggFI";
         String auth = nexmoConfig.getApiKey()+":"+nexmoConfig.getApiSecret();
         HttpEntity<Entity> httpEntity = new HttpEntity<Entity>(user, httpHeaders);
         logger.info("Request in Http Entity :: {}", httpEntity);
-        logger.info("Request in Http Entity :: {}");
 //        httpHeaders.setBasicAuth("6eba22d5","QmXBt61Pq3klggFI");
         httpHeaders.setBasicAuth(nexmoConfig.getApiKey(),nexmoConfig.getApiSecret());
+        URI uri=new URI(vonageUrl);
+        String nexmoURI= UriComponentsBuilder.fromUri(uri).build().toUriString();
+        ResponseEntity<String> responseEntity=restTemplate
+                .exchange(nexmoURI,HttpMethod.POST,httpEntity,String.class);
+            logger.info("Request in Http Entity :: {}", responseEntity.getBody());
+            if(responseEntity.getBody().contains("message_uuid")){
+                nexmoResponse=new ObjectMapper().readValue(responseEntity.getBody(),Response.class);
+                response.setMessage_uuid(nexmoResponse.getMessage_uuid());
+
+            }
+
 
 
 //        ResponseEntity<String> response=restTemplate.exchange(vonageUrl,HttpMethod.POST, httpEntity,String.class);
-        try {
+
 //            List<Entity> user = users.stream().map(user1 -> Entity
 //                            .builder()
 //                            .to(user1.getTo())
@@ -63,13 +87,19 @@ public class WhatsappServiceImpl {
 //            if (res.getStatusCode() == HttpStatus.OK) {
 //                return user;
 //            }
+            ObjectMapper objectMapper= new ObjectMapper();
+
             System.out.println(user);
-            return user;
+//            Response response = gson.fromJson(user.getMessage_uuid(), Response.class);
+//             response = client.send(user, new JsonBodyHandler<>(Response.class));
+
+
+            return response;
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
 //            throw new RuntimeException("Authorization exception");
         }
-return null;
+        return null;
 
     }
 

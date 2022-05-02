@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import whatsapp.com.whatsapp.entity.Entity;
+import whatsapp.com.whatsapp.entity.Response;
 import whatsapp.com.whatsapp.service.WhatsappServiceImpl;
 
 @RestController
@@ -15,7 +16,7 @@ public class Controller {
 
     @PostMapping(path= "/", consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
-    public Entity saveUsers(@RequestBody Entity users){
+    public Response saveUsers(@RequestBody Entity users){
         return whatsappService.addUser(users);
     }
 
